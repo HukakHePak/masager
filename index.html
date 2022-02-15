@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,400;1,300&display=swap" rel="stylesheet">
     <title>Masager</title>
 </head>
 <body>
@@ -12,38 +16,40 @@
 
         <!-- MAIN -->
 
-        <div class="main__frame">
+        <div class="main__frame active">
             <nav class="top__panel">
                 <button class="settings">Настройки</button>
                 <button class="exit">Выйти</button>
             </nav>
             <div class="message__display">
                 <div class="message__deck me">
-                    <span class="writer">Я</span>
-                    <span class="content">Добрый день!</span>
+                    <div class="message">
+                        <span class="sender">Я</span><span>:</span>
+                        <span class="content">Добрый день!</span>
+                    </div>
                     <span class="time">12:00</span>
                 </div>
             </div>
             <form class="message__panel">
-            <input type="text" name="newMessage" placeholder="Сообщение...">
-            <input type="button" value="->">
+                <input type="text" name="newMessage" placeholder="Сообщение...">
+                <input type="button" value=">">
             </form>
         </div>
         
         <!-- SERVICE -->
 
-        <div class="service__frame">
+        <div class="service__frame ">
             <div class="service__panel">
                 <span class="name">Настройки</span>
-                <button class="exit"></button>
+                <button class="exit">+</button>
             </div>
-            <div class="service__content">
-                <form class="settings">
-                    <span class="name">Имя в чате</span>
+            <form class="service__content">
+                <label class="name">Имя в чате</label>
+                <div class="service__inputs">
                     <input type="text" name="newName" value="Стив">
-                    <input type="button" value="->">
-                </form>
-            </div>
+                    <input type="button" value=">">
+                </div>
+            </form>
         </div>
 
     </div>
