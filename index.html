@@ -21,18 +21,20 @@
                 <button class="settings">Настройки</button>
                 <button class="exit">Выйти</button>
             </nav>
-            <div class="message__display">
-                <div class="message__deck me">
-                    <div class="message">
-                        <span class="sender">Я</span><span>:</span>
-                        <span class="content">Добрый день!</span>
+            <div class="message__display">  
+                <template class="message">
+                    <div class="message__deck me unread">
+                        <div class="message">
+                            <span class="sender">Я</span><span>:</span>
+                            <span class="content">Добрый день!</span>
+                        </div>
+                        <span class="time">12:00</span>
                     </div>
-                    <span class="time">12:00</span>
-                </div>
+                </template>
             </div>
-            <form class="message__panel">
+            <form name="createMessage" class="message__panel">
                 <input type="text" name="newMessage" placeholder="Сообщение...">
-                <input type="button" value=">">
+                <input type="submit" value=">">
             </form>
         </div>
         
@@ -47,12 +49,13 @@
                 <label class="name">Имя в чате</label>
                 <div class="service__inputs">
                     <input type="text" name="newName" value="Стив">
-                    <input type="button" value=">">
+                    <input type="submit" value=">">
                 </div>
             </form>
         </div>
 
     </div>
 
+    <script type="module" src="./js/main.js"></script>
 </body>
 </html>

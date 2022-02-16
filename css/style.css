@@ -428,7 +428,7 @@ body {
     border: 1px solid black;
 }
 
- [type="button"] {
+ [type="submit"] {
     border: 1px solid;
     background-color: inherit;
     margin-left: 8px;
@@ -483,7 +483,7 @@ body {
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
-    
+    overflow: hidden;
 }
 
 .message__deck {
@@ -497,6 +497,14 @@ body {
 
 .message__deck.me {
     align-self: flex-end;
+}
+
+.message__deck.unread {
+    background: #F7F7F7;
+}
+
+.message__deck .content {  
+    word-break: break-word;
 }
 
 .message__deck .time {
