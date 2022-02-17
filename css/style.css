@@ -398,7 +398,9 @@ body {
     line-height: 19px;
     letter-spacing: 0em;
     color: black;
-    background-color: white;
+    background: url(../img/anime-background.jpg) no-repeat;
+    background-size: cover;
+    background-attachment: fixed;
     height: 100vh;
     display: flex;
 }
@@ -418,6 +420,7 @@ body {
     display: flex;
     box-shadow: 0 0 6px 2px #535353;
     background: #535353;
+    background: transparent;
 }
 
 [type="text"] {
@@ -444,11 +447,12 @@ body {
 .main__frame {
     width: 100%;
     height: 100%;
-    padding: 8px;
-    background-color: white;
+    border: 8px solid white;
     display: none;
     flex-direction: column;
-    justify-content: space-between;
+
+    opacity: 0.99;
+    background:transparent;
 }
 
 .main__frame.active {
@@ -458,6 +462,10 @@ body {
 .top__panel {
     display: flex;
     justify-content: space-between;
+    background-color:white;
+    border: white solid;
+    border-width: 0 0 8px 0;
+    
 }
 
 .top__panel button {
@@ -475,13 +483,14 @@ body {
 }
 
 .message__display {
-    height: 435px;
-    border: 1px solid black;
+    height: 437px;
     padding: 8px;
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
     overflow: hidden;
+    box-shadow: inset 0 0 6px 2px #535353;
+    background: rgba(255, 255, 255, 0.493);
 }
 
 .message__deck {
@@ -516,9 +525,12 @@ body {
 }
 
 .message__panel, .service__content.settings .service__inputs {
-    height: 32px;
+    height: 40px;
     display: flex;
     justify-content: space-between;
+    background: white;
+    border: white solid;
+    border-width: 8px 0 0 0;
 }
 
 /*----------------------------------------------------------------
