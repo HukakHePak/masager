@@ -417,13 +417,11 @@ body {
     margin: auto;
     display: flex;
     box-shadow: 0 0 6px 2px #535353;
-}
-
-.wrapper.active {
     background: #535353;
 }
 
 [type="text"] {
+    padding: 4px;
     width: 100%;
     border: 1px solid black;
 }
@@ -432,7 +430,7 @@ body {
     border: 1px solid;
     background-color: inherit;
     margin-left: 8px;
-    width: 32px;
+    width: 38px;
 }
 
 /*----------------------------------------------------------------
@@ -517,7 +515,7 @@ body {
     color: #333333;
 }
 
-.message__panel {
+.message__panel, .service__content.settings .service__inputs {
     height: 32px;
     display: flex;
     justify-content: space-between;
@@ -556,6 +554,8 @@ body {
 }
 
 .service__panel .exit {
+    font-size: 24px;
+    line-height: 19px;
     opacity: 0.45;
     transform: rotate(-45deg);
     background: inherit;
@@ -572,10 +572,14 @@ body {
     margin-bottom: 8px;
 }
 
-.service__content .service__inputs {
+.service__content .service__inputs.column input {
     height: 32px;
-    display: flex;
-    justify-content: space-between;
+    margin-bottom: 8px;
+}
+
+.service__content .service__inputs.column input:last-child {
+    width: fit-content;
+    margin: 0;
 }
 
 /*----------------------------------------------------------------
