@@ -1,8 +1,7 @@
 export class Cookie {
-    constructor(key, value, age = 3600) {
+    constructor(key, value, age) {
         this.key = key;
-        this.value = value;
-        this.age = age;
+        this.set(value, age);
     }
     
     get() {
@@ -13,7 +12,7 @@ export class Cookie {
         }
     }
 
-    set(value = '') {
-        document.cookie = this.key + '=' + encodeURIComponent(value) + '; max-age=' + this.age;
+    set(value = '', age = 3600) {
+        document.cookie = this.key + '=' + encodeURIComponent(value) + '; max-age=' + age;
     }
 };
