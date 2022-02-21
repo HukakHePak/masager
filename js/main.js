@@ -1,141 +1,85 @@
 import { UI } from './view.js';
-import { cookie } from './cookies.js';
+import { Cookie } from './cookies.js';
+import { request } from './api.js';
+import { message } from './messages.js';
+import { popups } from './popups.js';
 
-const messageForm = UI.CHAT.SEND_FORM;
+const DOMAINS = {
+    CHAT: 'https://chat1-341409.oa.r.appspot.com/api/',
+};
 
-messageForm.addEventListener('submit', event => {
-    const msgText = messageForm.elements.newMessage.value;
+const URL = {
+    CHAT: {
+        USER: DOMAINS.CHAT + 'user',
+        ME: DOMAINS.CHAT + 'user/me',
+        MESSAGES: DOMAINS.CHAT + 'messages',
+    },
+};
 
-    if(!msgText) {
+const tokenCook = new Cookie('token');
+
+async function tokenedRequest(url, method, body) {
+    return await request(url, { method, body, headers: { Authorization: `Bearer ${ tokenCook.get() }`} });
+}
+
+function formHandler(callback) {
+    return function(event) {
         event.preventDefault();
-        return;
-    }
-
-    const msgNode = UI.CHAT.TEMPLATE.content.cloneNode(true);
-
-    msgNode.querySelector('.content').textContent = msgText;
-
-    msgNode.querySelector('.time').textContent = getTime();
-
-    UI.CHAT.DISPLAY.prepend(msgNode);
-
-    messageForm.reset();
-    event.preventDefault();
-});
-
-function getTime() {
-    const date = new Date();
-
-    const hours = date.getHours();
-    const minutes = date.getMinutes();
-
-    return (hours < 10 ? '0' : '') + hours + ':' + (minutes < 10 ? '0' : '') + minutes;
-}
-
-function closeTabs() {
-    for(let w in UI) {
-        UI[w].NODE?.classList.remove('active');
+        callback(event);
+        event.target.reset();
     }
 }
 
-function openTab(select) {
-    let tab = undefined;
+UI.CHAT.SEND_FORM.addEventListener('submit', formHandler( event => {
+    message.send({ content: event.target.elements.newMessage.value });
+}));
 
-    switch(select) {
-        case 'chat':
-            tab = UI.CHAT.NODE;
-            break;
+UI.CHAT.BUTTONS.SETTINGS.addEventListener('click', async () => {
+    UI.SETTINGS.FORM.elements.newName.value = (await tokenedRequest(URL.CHAT.ME)).name;
 
-            case 'auth':
-                tab = UI.AUTHORIZATION.NODE;
-                break;
-
-                case 'confirm':
-                    tab = UI.CONFIRM.NODE;
-                    break;
-                    
-                    case 'settings':
-                        tab = UI.SETTINGS.NODE;
-    };
-
-    closeTabs();
-    tab?.classList.add('active');
-}
-
-UI.CHAT.BUTTONS.SETTINGS.addEventListener('click', () => {
-    openTab('settings');
+    popups.open('settings');
 });
 
 UI.CHAT.BUTTONS.EXIT.addEventListener('click', () => {
-    cookie.saveToken();
-    openTab('auth');
+    tokenCook.set();
+    popups.open('auth');
 });
 
-[ UI.AUTHORIZATION, UI.CONFIRM ].forEach( item => {
-    item.EXIT.addEventListener('click', closeTabs);
+[ UI.AUTH, UI.CONFIRM ].forEach( item => {
+    item.EXIT.addEventListener('click', popups.close);
 });
 
 UI.SETTINGS.EXIT.addEventListener('click', () => {
-    openTab('chat');
+    popups.open('chat');
 });
 
-const authForm = UI.AUTHORIZATION.FORM;
-
-authForm.addEventListener('submit', async event => {
-    event.preventDefault();
-
-    const email = authForm.elements.mail.value;
-
-    if(!email) return;
-
-    const request = await fetch('https://chat1-341409.oa.r.appspot.com/api/user', { 
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json;charset=utf-8'
-        },
-        body: JSON.stringify({ email })
+UI.AUTH.FORM.addEventListener('submit', formHandler( async event => {
+    const response = await request(URL.CHAT.USER, { 
+        method: 'post', 
+        body: { 
+            email: UI.AUTH.FORM.elements.mail.value 
+        }
     });
 
-    if(!request.ok) {
-        authForm.reset();
-        return;
+    if(response) popups.open('confirm'); 
+}));
+
+UI.CONFIRM.FORM.addEventListener('submit',formHandler( async event => {
+    tokenCook.set(event.target.elements.code.value);
+
+    if(await tokenedRequest(URL.CHAT.ME)) popups.open('chat');
+}));
+
+UI.SETTINGS.FORM.addEventListener('submit', formHandler( async event => {
+    if(tokenedRequest(URL.CHAT.USER, 'patch', { name: event.target.elements.newName.value })) {
+        popups.open('chat');
     }
+}));
 
-    openTab('confirm');
-});
+popups.open(tokenCook.get() ? 'chat' : 'auth');
 
-UI.CONFIRM.FORM.addEventListener('submit', event => {
-    event.preventDefault();
+console.log(await tokenedRequest(URL.CHAT.ME))
 
-    cookie.saveToken(UI.CONFIRM.FORM.elements.code.value);
-
-    openTab('chat');
-});
-
-UI.SETTINGS.FORM.addEventListener('submit', async event => {
-    event.preventDefault();
-
-    const name = UI.SETTINGS.FORM.elements.newName.value;
-
-    console.log(name)
-
-    if(!name) return;
-
-    const request = await fetch('https://chat1-341409.oa.r.appspot.com/api/user', { 
-        method: 'PATCH',
-        headers: {
-            Authorization: `Bearer ${ cookie.getToken() }`,
-            'Content-Type': 'application/json;charset=utf-8'
-        },
-        body: JSON.stringify({ name })
-    });
-
-    if(!request.ok) {
-        UI.SETTINGS.FORM.reset();
-        return;
-    }
-
-    openTab('chat');
-});
-
-openTab(cookie.getToken() ? 'chat' : 'auth');
+// request('https://chat1-341409.oa.r.appspot.com/api/messages/', 'get', '', request => {
+//     console.log(request);
+// })
