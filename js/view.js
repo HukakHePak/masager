@@ -4,7 +4,7 @@ const CHAT = {
         SETTINGS: document.querySelector('.main__frame .settings'),
         EXIT: document.querySelector('.main__frame .exit'),
     },
-    SEND_FORM: document.forms.createMessage,
+    FORM: document.forms.createMessage,
     DISPLAY: document.querySelector('.message__display'),
     TEMPLATE: document.querySelector('template.message'),
 };

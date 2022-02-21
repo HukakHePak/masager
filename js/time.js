@@ -1,5 +1,5 @@
-export function getTime() {
-    const date = new Date();
+export function getTime(iso) {
+    const date = iso ? new Date(iso) : new Date();
 
     const hours = date.getHours();
     const minutes = date.getMinutes();

@@ -1,8 +1,9 @@
 import { UI } from './view.js';
 import { Cookie } from './cookies.js';
 import { request } from './api.js';
-import { message } from './messages.js';
+import { Message } from './messages.js';
 import { popups } from './popups.js';
+import { getTime } from './time.js';
 
 const DOMAINS = {
     CHAT: 'https://chat1-341409.oa.r.appspot.com/api/',
@@ -22,17 +23,13 @@ async function tokenedRequest(url, method, body) {
     return await request(url, { method, body, headers: { Authorization: `Bearer ${ tokenCook.get() }`} });
 }
 
-function formHandler(callback) {
+function formHandler(handling) {
     return function(event) {
         event.preventDefault();
-        callback(event);
+        handling(event);
         event.target.reset();
     }
 }
-
-UI.CHAT.SEND_FORM.addEventListener('submit', formHandler( event => {
-    message.send({ content: event.target.elements.newMessage.value });
-}));
 
 UI.CHAT.BUTTONS.SETTINGS.addEventListener('click', async () => {
     UI.SETTINGS.FORM.elements.newName.value = (await tokenedRequest(URL.CHAT.ME)).name;
@@ -78,8 +75,18 @@ UI.SETTINGS.FORM.addEventListener('submit', formHandler( async event => {
 
 popups.open(tokenCook.get() ? 'chat' : 'auth');
 
-console.log(await tokenedRequest(URL.CHAT.ME))
+const messageList = [];
 
-// request('https://chat1-341409.oa.r.appspot.com/api/messages/', 'get', '', request => {
-//     console.log(request);
-// })
+UI.CHAT.FORM.addEventListener('submit', formHandler( event => {
+    const message = new Message({ message: event.target.elements.newMessage.value, time: getTime() });
+    message.send(tokenedRequest);
+    messageList.push(message);
+}));
+
+(await tokenedRequest(URL.CHAT.MESSAGES))?.messages?.forEach(({ message, username, createdAt}) => messageList.push(new Message( { 
+    message, 
+    username, 
+    time: getTime(createdAt), 
+})));
+
+messageList.forEach(item => item.show());
