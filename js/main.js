@@ -91,7 +91,7 @@ UI.CHAT.NODE.addEventListener('open', async () => {
     tokenedRequest(URLS.CHAT.ME).then( response => COOKS.MAIL.set(response.email, AGE.DAY) );
     
     try {
-        (await tokenedRequest(URLS.CHAT.MESSAGES))?.messages.slice(-20).forEach( createMessage );
+        (await tokenedRequest(URLS.CHAT.MESSAGES))?.messages.slice(-50).forEach( createMessage );
     } catch (e) { console.error(e); }
 
     chatSocket.open(URLS.CHAT.SOCKET + COOKS.TOKEN.get());
@@ -111,7 +111,7 @@ tokenedRequest(URLS.CHAT.ME).then( response => {
     }
  
     const mail = COOKS.MAIL.get();
-    
+
     if(!mail) return;
 
     const auth = UI.AUTH.FORM;

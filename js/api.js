@@ -7,7 +7,7 @@ export const URLS = {
         USER: DOMAINS.CHAT + 'user',
         ME: DOMAINS.CHAT + 'user/me',
         MESSAGES: DOMAINS.CHAT + 'messages',
-        SOCKET: 'ws://chat1-341409.oa.r.appspot.com/websockets?'
+        SOCKET: 'wss://chat1-341409.oa.r.appspot.com/websockets?'
     },
 };
 
