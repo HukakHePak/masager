@@ -503,6 +503,7 @@ body {
     display: flex;
     align-self: flex-start;
     flex-direction: column;
+    box-shadow: 0 0 6px 2px #535353;
 }
 
 .message__deck.me {
@@ -521,8 +522,8 @@ body {
     align-self: flex-end;
     font-style: italic;
     font-weight: 300;
-    font-size: 14px;
-    line-height: 16px;
+    font-size: 12px;
+    line-height: 14px;
 
     color: #333333;
 }

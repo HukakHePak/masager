@@ -1,8 +1,12 @@
-export function getTime(iso) {
+export function formatDate(iso) {
     const date = iso ? new Date(iso) : new Date();
 
-    const hours = date.getHours();
-    const minutes = date.getMinutes();
+    return {
+        date: toXX(date.getDate) + ' ' + toXX(date.getMonth) + ' ' + date.getFullYear(),
+        time: toXX(date.getHours()) + ':' + toXX(date.getMinutes())
+    }
+}
 
-    return (hours < 10 ? '0' : '') + hours + ':' + (minutes < 10 ? '0' : '') + minutes;
+function toXX(time) {
+    return (time < 10 ? '0' : '') + time;
 }

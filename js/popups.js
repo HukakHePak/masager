@@ -1,13 +1,31 @@
-import { UI } from "./view.js";
+export class Popup {
+    static _nodes = [];
 
-export const popups = {
+    constructor(node) {
+        this._node = node;
+        Popup._nodes.push(this);
+    }
+
+    get node() { 
+        return this._node;
+    }
+
+    open() {
+        if(this.isOpened()) return;
+
+        Popup._nodes.forEach(item => item.close());
+
+        this.node?.classList.add('active');
+        this.node?.dispatchEvent(new CustomEvent('open'));   
+    }
     close() {
-        for(let element in UI) {
-            UI[element].NODE?.classList.remove('active');
-        }
-    },
-    open(name) {
-        this.close();
-        UI[name.toUpperCase()]?.NODE?.classList.add('active');
+        if(!this.isOpened()) return;
+
+        this.node.classList.remove('active');
+        this.node.dispatchEvent(new CustomEvent('close'));
+    }
+    
+    isOpened() {
+        return this.node?.classList.contains('active');
     }
 }

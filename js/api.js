@@ -9,5 +9,5 @@ export async function request(url, options = {}) {
         options.body = JSON.stringify(options.body);
     }
 
-    return await fetch(url, options).then(response => response.json()).catch(console.error);
+    return fetch(url, options).then(response => response.json()).catch(console.error);
 }

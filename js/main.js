@@ -1,9 +1,10 @@
 import { UI } from './view.js';
 import { Cookie } from './cookies.js';
 import { request } from './api.js';
-import { Message } from './messages.js';
-import { popups } from './popups.js';
-import { getTime } from './time.js';
+import { message } from './messages.js';
+import { Popup } from './popups.js';
+import { formatDate } from './time.js';
+import { SocketHandler } from './socket.js';
 
 const DOMAINS = {
     CHAT: 'https://chat1-341409.oa.r.appspot.com/api/',
@@ -14,79 +15,96 @@ const URL = {
         USER: DOMAINS.CHAT + 'user',
         ME: DOMAINS.CHAT + 'user/me',
         MESSAGES: DOMAINS.CHAT + 'messages',
+        SOCKET: 'ws://chat1-341409.oa.r.appspot.com/websockets?'
     },
 };
 
+const POPUPS = {
+    SETTINGS: new Popup(UI.SETTINGS.NODE),
+    AUTH: new Popup(UI.AUTH.NODE),
+    CHAT: new Popup(UI.CHAT.NODE),
+    CONFIRM: new Popup(UI.CONFIRM.NODE),
+}
+
 const tokenCook = new Cookie('token');
 
-async function tokenedRequest(url, method, body) {
-    return await request(url, { method, body, headers: { Authorization: `Bearer ${ tokenCook.get() }`} });
+const chatSocket = new SocketHandler(async event => {
+    const data = JSON.parse(event.data);
+
+    console.log(data);
+    
+    const user = (await tokenedRequest(URL.CHAT.ME)).email == data.user.email ? undefined : data.user.name;
+
+    message.print(data.text, formatDate(data.createdAt), user);
+});
+
+function tokenedRequest(url, method, body) {
+    return request(url, { method, body, headers: { Authorization: `Bearer ${ tokenCook.get() }`} });
 }
 
 function formHandler(handling) {
-    return function(event) {
+    return event => {
         event.preventDefault();
         handling(event);
         event.target.reset();
     }
 }
 
-UI.CHAT.BUTTONS.SETTINGS.addEventListener('click', async () => {
-    UI.SETTINGS.FORM.elements.newName.value = (await tokenedRequest(URL.CHAT.ME)).name;
+UI.CHAT.BUTTONS.SETTINGS.addEventListener('click', () => {
+    tokenedRequest(URL.CHAT.ME).then( response => {
+        UI.SETTINGS.FORM.elements.newName.value = response.name;
+    });
 
-    popups.open('settings');
+    POPUPS.SETTINGS.open();
 });
 
 UI.CHAT.BUTTONS.EXIT.addEventListener('click', () => {
-    tokenCook.set();
-    popups.open('auth');
+    tokenCook.clear();
+    POPUPS.AUTH.open();
 });
 
-[ UI.AUTH, UI.CONFIRM ].forEach( item => {
-    item.EXIT.addEventListener('click', popups.close);
-});
+UI.AUTH.EXIT.addEventListener('click', () => POPUPS.AUTH.close() );
 
-UI.SETTINGS.EXIT.addEventListener('click', () => {
-    popups.open('chat');
-});
+UI.CONFIRM.EXIT.addEventListener('click', () => POPUPS.CONFIRM.close() );
 
-UI.AUTH.FORM.addEventListener('submit', formHandler( async event => {
-    const response = await request(URL.CHAT.USER, { 
+UI.SETTINGS.EXIT.addEventListener('click', () => POPUPS.CHAT.open() );
+
+UI.AUTH.FORM.addEventListener('submit', formHandler( event => {
+    request(URL.CHAT.USER, { 
         method: 'post', 
         body: { 
             email: UI.AUTH.FORM.elements.mail.value 
         }
-    });
-
-    if(response) popups.open('confirm'); 
+    }).then( () => POPUPS.CONFIRM.open() );
 }));
 
-UI.CONFIRM.FORM.addEventListener('submit',formHandler( async event => {
+UI.CONFIRM.FORM.addEventListener('submit',formHandler( event => {
     tokenCook.set(event.target.elements.code.value);
 
-    if(await tokenedRequest(URL.CHAT.ME)) popups.open('chat');
+    tokenedRequest(URL.CHAT.ME).then( () => POPUPS.CHAT.open() );
 }));
 
-UI.SETTINGS.FORM.addEventListener('submit', formHandler( async event => {
-    if(tokenedRequest(URL.CHAT.USER, 'patch', { name: event.target.elements.newName.value })) {
-        popups.open('chat');
-    }
+UI.SETTINGS.FORM.addEventListener('submit', formHandler( event => {
+    tokenedRequest(URL.CHAT.USER, 'patch', { 
+        name: event.target.elements.newName.value 
+    }).then( () => POPUPS.CHAT.open() );
 }));
 
-popups.open(tokenCook.get() ? 'chat' : 'auth');
+UI.CHAT.FORM.addEventListener('submit', formHandler(event => {
+    chatSocket.socket?.send(JSON.stringify({ text: event.target.newMessage.value }));
+}))
 
-const messageList = [];
+UI.CHAT.NODE.addEventListener('open', () => {
+    console.log('opened');
+    chatSocket.open(URL.CHAT.SOCKET + tokenCook.get());
+});
 
-UI.CHAT.FORM.addEventListener('submit', formHandler( event => {
-    const message = new Message({ message: event.target.elements.newMessage.value, time: getTime() });
-    message.send(tokenedRequest);
-    messageList.push(message);
-}));
+UI.CHAT.NODE.addEventListener('close', () => {
+    chatSocket.close();
+});
 
-(await tokenedRequest(URL.CHAT.MESSAGES))?.messages?.forEach(({ message, username, createdAt}) => messageList.push(new Message( { 
-    message, 
-    username, 
-    time: getTime(createdAt), 
-})));
+window.addEventListener('unload', () => chatSocket.close() );
 
-messageList.forEach(item => item.show());
+POPUPS[tokenCook.get() ? 'CHAT' : 'AUTH'].open();
+
+//TODO: fix getting mesages while settings open
