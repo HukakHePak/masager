@@ -30,8 +30,6 @@ const tokenCook = new Cookie('token');
 
 const chatSocket = new SocketHandler(async event => {
     const data = JSON.parse(event.data);
-
-    console.log(data);
     
     const user = (await tokenedRequest(URL.CHAT.ME)).email == data.user.email ? undefined : data.user.name;
 
