@@ -1,3 +1,16 @@
+const DOMAINS = {
+    CHAT: 'https://chat1-341409.oa.r.appspot.com/api/',
+};
+
+export const URLS = {
+    CHAT: {
+        USER: DOMAINS.CHAT + 'user',
+        ME: DOMAINS.CHAT + 'user/me',
+        MESSAGES: DOMAINS.CHAT + 'messages',
+        SOCKET: 'ws://chat1-341409.oa.r.appspot.com/websockets?'
+    },
+};
+
 export async function request(url, options = {}) {
     options.method = options?.method?.toUpperCase();
 
