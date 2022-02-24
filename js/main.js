@@ -3,7 +3,6 @@ import { Cookie, AGE } from './cookie.js';
 import { request, URLS } from './api.js';
 import { message } from './messages.js';
 import { Popup } from './popup.js';
-import { formatDate } from './time.js';
 import { SocketHandler } from './socket.js';
 
 const POPUPS = {
@@ -15,24 +14,15 @@ const POPUPS = {
 
 const COOKS = {
     TOKEN: new Cookie('token'),
-    MAIL: new Cookie('mail'),
 };
 
 const chatSocket = new SocketHandler( event => { 
-    createMessage(JSON.parse(event.data));
-    UI.CHAT.SOUND.play();   // отключить уведомления от мёеня
+    const data = JSON.parse(event.data);
+
+    message.print(data);
+
+    if(localStorage.getItem('mail') != data.user.email) UI.CHAT.SOUND.play();
  } );
-
-function createMessage(data) {    // перенести в messages.js
-    try {   
-        const name = COOKS.MAIL.get() == data.user.email ? undefined : data.user.name;
-
-        message.print(data.text, formatDate(data.createdAt), name);
-    } catch (e) {
-        e.message = 'uncorrect data'
-        console.error(e);
-    }
-}
 
 function tokenedRequest(url, method, body) {
     return request(url, { method, body, headers: { Authorization: `Bearer ${ COOKS.TOKEN.get() }`} });
@@ -55,6 +45,7 @@ UI.CHAT.BUTTONS.SETTINGS.addEventListener('click', () => {
 });
 
 UI.CHAT.BUTTONS.EXIT.addEventListener('click', () => {
+    chatSocket.close();
     COOKS.TOKEN.clear();
     POPUPS.AUTH.open();
 });
@@ -75,50 +66,42 @@ UI.AUTH.FORM.addEventListener('submit', formHandler( () => {
 }));
 
 UI.CONFIRM.FORM.addEventListener('submit',formHandler( event => {
-    COOKS.TOKEN.set(event.target.elements.code.value);
+    COOKS.TOKEN.set(event.target.elements.code.value, AGE.HOUR * 3);
 
-    tokenedRequest(URLS.CHAT.ME).then( response => { POPUPS.CHAT.open() });
+    tokenedRequest(URLS.CHAT.ME).then( () => { POPUPS.CHAT.open() });
 }));
 
 UI.SETTINGS.FORM.addEventListener('submit', formHandler( event => {
     tokenedRequest(URLS.CHAT.USER, 'patch', { 
         name: event.target.elements.newName.value 
-    }).then( () => POPUPS.CHAT.open() );
+    });
+
+    POPUPS.CHAT.open()
 }));
 
 UI.CHAT.FORM.addEventListener('submit', formHandler(event => {
     chatSocket.socket?.send(JSON.stringify({ text: event.target.newMessage.value }));
 }))
 
-UI.CHAT.NODE.addEventListener('open', async () => {
-    tokenedRequest(URLS.CHAT.ME).then( response => COOKS.MAIL.set(response.email, AGE.DAY) );
-    
-    try {
-        (await tokenedRequest(URLS.CHAT.MESSAGES))?.messages.slice(-50).forEach( createMessage );
-    } catch (e) { console.error(e); }
-
+UI.CHAT.NODE.addEventListener('open', async () => {    // добавить функции прокрутки и догрузки
+    (await tokenedRequest(URLS.CHAT.MESSAGES))?.messages.slice(-50).forEach( message.print );
+  
     chatSocket.open(URLS.CHAT.SOCKET + COOKS.TOKEN.get());
 });
 
 UI.CHAT.NODE.addEventListener('close', () => {
-    chatSocket.close();
     message.clear()
- });
+});
 
 window.addEventListener('unload', () => chatSocket.close() );
 
 tokenedRequest(URLS.CHAT.ME).then( response => { 
     if(response.name) {
         POPUPS.CHAT.open();
+        localStorage.setItem('mail', response.email);
         return;
     }
- 
-    const mail = COOKS.MAIL.get();
 
-    if(!mail) return;
-
-    const auth = UI.AUTH.FORM;
-
-    auth.elements.mail.value = mail;
-    auth.querySelector('[type="submit"]').click();            
+    UI.AUTH.FORM.elements.mail.value = response.email;
+    UI.AUTH.FORM.querySelector('[type="submit"]').click();            
 });
