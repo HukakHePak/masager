@@ -7,6 +7,7 @@ const CHAT = {
     FORM: document.forms.createMessage,
     DISPLAY: document.querySelector('.message__display'),
     TEMPLATE: document.querySelector('template.message'),
+    SOUND: document.querySelector('audio')
 };
 
 const AUTHORIZATION = {

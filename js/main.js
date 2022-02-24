@@ -18,9 +18,12 @@ const COOKS = {
     MAIL: new Cookie('mail'),
 };
 
-const chatSocket = new SocketHandler( event => createMessage(JSON.parse(event.data)) );
+const chatSocket = new SocketHandler( event => { 
+    createMessage(JSON.parse(event.data));
+    UI.CHAT.SOUND.play();   // отключить уведомления от мёеня
+ } );
 
-function createMessage(data) {    
+function createMessage(data) {    // перенести в messages.js
     try {   
         const name = COOKS.MAIL.get() == data.user.email ? undefined : data.user.name;
 
