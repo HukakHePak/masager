@@ -12,6 +12,8 @@ const POPUPS = {
     CONFIRM: new Popup(UI.CONFIRM.NODE),
 };
 
+const MESSAGES__CHUNK__SIZE = 20;
+
 const COOKS = {
     TOKEN: new Cookie('token'),
 };
@@ -71,7 +73,7 @@ UI.CONFIRM.FORM.addEventListener('submit',formHandler( event => {
     tokenedRequest(URLS.CHAT.ME).then( () => { POPUPS.CHAT.open() });
 }));
 
-UI.SETTINGS.FORM.addEventListener('submit', formHandler( event => {
+UI.SETTINGS.FORM.addEventListener('submit', formHandler( event => { // remake submits to one handle
     tokenedRequest(URLS.CHAT.USER, 'patch', { 
         name: event.target.elements.newName.value 
     });
@@ -81,12 +83,26 @@ UI.SETTINGS.FORM.addEventListener('submit', formHandler( event => {
 
 UI.CHAT.FORM.addEventListener('submit', formHandler(event => {
     chatSocket.socket?.send(JSON.stringify({ text: event.target.newMessage.value }));
-}))
+}));
 
-UI.CHAT.NODE.addEventListener('open', async () => {    // добавить функции прокрутки и догрузки
-    (await tokenedRequest(URLS.CHAT.MESSAGES))?.messages.slice(-50).forEach( message.print );
+UI.CHAT.NODE.addEventListener('open', async () => {
+    const messages = (await tokenedRequest(URLS.CHAT.MESSAGES))?.messages;
+
+    if(!messages) return;
+
+    localStorage.setItem('messages', JSON.stringify(messages));
+
+    message.printChunk(MESSAGES__CHUNK__SIZE);
   
     chatSocket.open(URLS.CHAT.SOCKET + COOKS.TOKEN.get());
+});
+
+UI.CHAT.DISPLAY.addEventListener('scroll', () => {
+    const disp = UI.CHAT.DISPLAY;
+
+    if(-disp.scrollTop > (disp.scrollHeight - (disp.clientHeight * 2))) {
+        message.printChunk(MESSAGES__CHUNK__SIZE);
+    }
 });
 
 UI.CHAT.NODE.addEventListener('close', () => {
@@ -102,6 +118,16 @@ tokenedRequest(URLS.CHAT.ME).then( response => {
         return;
     }
 
-    UI.AUTH.FORM.elements.mail.value = response.email;
+    UI.AUTH.FORM.elements.mail.value = localStorage.getItem('mail');
     UI.AUTH.FORM.querySelector('[type="submit"]').click();            
+});
+
+
+
+window.addEventListener('blur', () => {
+    UI.CHAT.SOUND.volume = 1;   
+});
+
+window.addEventListener('focus', () => {
+    UI.CHAT.SOUND.volume = 0;
 });

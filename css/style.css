@@ -427,6 +427,14 @@ body {
     background: #535353;
 }
 
+input {
+    transition: ease 0.3s;
+}
+
+button:hover {
+    transform: scale(1.04);
+}
+
 [type="text"] {
     padding: 4px;
     padding-left: 10px;
@@ -436,11 +444,12 @@ body {
 }
 
 button {
+    transition: ease 0.6s;
     color: #646464;
     border: 1.3px solid #919191;
 }
 
- [type="submit"] {
+[type="submit"] {
     border: 1.3px solid #919191;
     background-color: inherit;
     margin-left: 8px;
@@ -448,6 +457,14 @@ button {
     height: 32px;
     color: #535353af;
     font-size: 20px;
+}
+
+[type="text"]:hover {
+    transform: scale(1.02);
+}
+
+[type="submit"]:hover {
+    transform: scale(1.05);
 }
 
 /*----------------------------------------------------------------
@@ -511,6 +528,19 @@ button {
 
 ::-webkit-scrollbar {
     display: none;
+}
+
+.message__display .story__end {
+    background: white;
+    margin-bottom: 10px;
+    padding: 10px;
+    text-align: center;
+    opacity: 0.9;
+    display: none;
+}
+
+.message__display .story__end.active {
+    display: inline-block;
 }
 
 .message__deck {
