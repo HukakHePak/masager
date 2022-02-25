@@ -20,10 +20,12 @@ const COOKS = {
 
 const chatSocket = new SocketHandler( event => { 
     const data = JSON.parse(event.data);
-
     message.print(data);
 
-    if(localStorage.getItem('mail') != data.user.email) UI.CHAT.SOUND.play();
+    const display = UI.CHAT.DISPLAY;
+    if(-display.scrollTop <= display.clientHeight) message.scrollDown();
+
+    if(localStorage.getItem('mail') != data.user.email) UI.CHAT.SOUND.play();    
  } );
 
 function tokenedRequest(url, method, body) {
@@ -97,19 +99,28 @@ UI.CHAT.NODE.addEventListener('open', async () => {
     chatSocket.open(URLS.CHAT.SOCKET + COOKS.TOKEN.get());
 });
 
+UI.CHAT.BUTTONS.SCROLL.addEventListener('click', message.scrollDown );
+
 UI.CHAT.DISPLAY.addEventListener('scroll', () => {
     const disp = UI.CHAT.DISPLAY;
 
-    if(-disp.scrollTop > (disp.scrollHeight - (disp.clientHeight * 2))) {
+    if(-disp.scrollTop > (disp.scrollHeight - disp.clientHeight * 2)) {
         message.printChunk(MESSAGES__CHUNK__SIZE);
     }
+
+    UI[(-disp.scrollTop > disp.clientHeight / 2 ? '' : 'de') + 'active'](UI.CHAT.BUTTONS.SCROLL);
+
+    //UI.CHAT.BUTTONS.SCROLL.classList[-disp.scrollTop > disp.clientHeight / 2 ? 'add' : 'remove']('active');
+
+    // if(-disp.scrollTop > disp.clientHeight) {
+    //     console.log('true');
+    // }
+
 });
 
-UI.CHAT.NODE.addEventListener('close', () => {
-    message.clear()
-});
+UI.CHAT.NODE.addEventListener('close', message.clear );
 
-window.addEventListener('unload', () => chatSocket.close() );
+window.addEventListener('unload', chatSocket.close );
 
 tokenedRequest(URLS.CHAT.ME).then( response => { 
     if(response.name) {
@@ -121,8 +132,6 @@ tokenedRequest(URLS.CHAT.ME).then( response => {
     UI.AUTH.FORM.elements.mail.value = localStorage.getItem('mail');
     UI.AUTH.FORM.querySelector('[type="submit"]').click();            
 });
-
-
 
 window.addEventListener('blur', () => {
     UI.CHAT.SOUND.volume = 1;   

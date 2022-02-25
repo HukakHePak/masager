@@ -3,12 +3,14 @@ const CHAT = {
     BUTTONS: {
         SETTINGS: document.querySelector('.main__frame .settings'),
         EXIT: document.querySelector('.main__frame .exit'),
+        SCROLL: document.querySelector('.main__frame .message__scroll')
     },
     FORM: document.forms.createMessage,
     DISPLAY: document.querySelector('.message__display'),
     TEMPLATE: document.querySelector('template.message'),
     SOUND: document.querySelector('audio'),
-    STORY: document.querySelector('.story__end')
+    STORY: document.querySelector('.story__end'),
+    
 };
 
 const AUTHORIZATION = {
@@ -31,4 +33,15 @@ const SETTINGS = {
 
 export const UI = {
     CHAT, AUTH: AUTHORIZATION, CONFIRM, SETTINGS,
+    active(node) {
+        node?.classList.add('active');
+    },
+    
+    isActive(node) {
+        return node?.classList.contains('active');
+    },
+
+    deactive(node) {
+        node?.classList.remove('active');
+    }
 }

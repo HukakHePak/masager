@@ -3,30 +3,44 @@ import { formatDate } from './time.js';
 
 const display = UI.CHAT.DISPLAY;
 
-export const message = {
+export const message = { //rename to display
+
+    //try to add methods for UI.CHAT.DISPLAY
     printChunk(size) {
-        const messages = JSON.parse(localStorage.getItem('messages'));
+        const messages = JSON.parse(localStorage.getItem('messages'));  
         
-        const story = UI.CHAT.STORY;            
+        if(!messages.length) {
+            message.printEnd();
+            return;
+        }
 
         if(messages.length < size) {
             size = messages.length;
-            story.classList.add('active');
         }
         
         for(let i = 0; i < size; i++) {
             display.append(message.create(messages.pop()));
-        }
-
-        if(story.classList.contains('active')) display.append(story);
+        } 
         
         localStorage.setItem('messages', JSON.stringify(messages));
     },
 
-    print(data) {   
+    async printEnd() {
+        const story = UI.CHAT.STORY; 
+
+        if(UI.isActive(story)) return;
+
+        UI.active(story);
+        display.append(story);
+    },
+
+    print(data) {
+        const height = display.scrollHeight;
+
         const node = message.create(data);
         display.prepend(node);
-        if(-display.scrollTop < display.clientHeight) display.scrollTop = 0;
+
+        display.scrollTop = height - display.scrollHeight;
     },
 
     create(data) {
@@ -51,5 +65,26 @@ export const message = {
 
     clear() {
         display.innerHTML = '';
+    },
+
+    scrollDown() {
+        console.log(display.scrollTop);
+        display.scrollTop -= (display.scrollTop - 40) / 40;
+
+        if(-display.scrollTop > 0) {
+            setTimeout(message.scrollDown, 0);
+        } 
+    },
+
+    scrollToStart() {
+        display.scrollTop = -display.scrollHeight;
+
+        if(!UI.isActive(UI.CHAT.STORY)) {
+            setTimeout(message.scrollToStart, 0);
+        } 
+    },
+
+    showScroll() {
+
     }
 };

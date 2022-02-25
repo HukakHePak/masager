@@ -21,8 +21,8 @@ export class Popup {
     close() {
         if(!this.isOpened()) return;
 
-        this.node.classList.remove('active');
-        this.node.dispatchEvent(new CustomEvent('close'));
+        this.node?.classList.remove('active');
+        this.node?.dispatchEvent(new CustomEvent('close'));
     }
     
     isOpened() {
