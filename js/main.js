@@ -1,6 +1,7 @@
 import { UI } from './view.js';
-import { Cookie, AGE } from './cookie.js';
+import { Cookie } from './cookie.js';
 import { request, URLS } from './api.js';
+import { AGE } from './time.js';
 import { message } from './messages.js';
 import { Popup } from './popup.js';
 import { SocketHandler } from './socket.js';
@@ -22,9 +23,6 @@ const chatSocket = new SocketHandler( event => {
     const data = JSON.parse(event.data);
     message.print(data);
 
-    const display = UI.CHAT.DISPLAY;
-    if(-display.scrollTop <= display.clientHeight) message.scrollDown();
-
     if(localStorage.getItem('mail') != data.user.email) UI.CHAT.SOUND.play();    
  } );
 
@@ -42,7 +40,7 @@ function formHandler(handling) {
 
 UI.CHAT.BUTTONS.SETTINGS.addEventListener('click', () => {
     tokenedRequest(URLS.CHAT.ME).then( response => {
-        UI.SETTINGS.FORM.elements.newName.value = response.name;
+        UI.SETTINGS.FORMS.NAME.elements.newName.value = response.name;
     });
 
     POPUPS.SETTINGS.open();
@@ -75,7 +73,7 @@ UI.CONFIRM.FORM.addEventListener('submit',formHandler( event => {
     tokenedRequest(URLS.CHAT.ME).then( () => { POPUPS.CHAT.open() });
 }));
 
-UI.SETTINGS.FORM.addEventListener('submit', formHandler( event => { // remake submits to one handle
+UI.SETTINGS.FORMS.NAME.addEventListener('submit', formHandler( event => { // remake submits to one handle
     tokenedRequest(URLS.CHAT.USER, 'patch', { 
         name: event.target.elements.newName.value 
     });
@@ -102,13 +100,13 @@ UI.CHAT.NODE.addEventListener('open', async () => {
 UI.CHAT.BUTTONS.SCROLL.addEventListener('click', message.scrollDown );
 
 UI.CHAT.DISPLAY.addEventListener('scroll', () => {
-    const disp = UI.CHAT.DISPLAY;
+    const display = UI.CHAT.DISPLAY;
 
-    if(-disp.scrollTop > (disp.scrollHeight - disp.clientHeight * 2)) {
+    if(-display.scrollTop > (display.scrollHeight - display.clientHeight * 2)) {
         message.printChunk(MESSAGES__CHUNK__SIZE);
     }
 
-    UI[(-disp.scrollTop > disp.clientHeight / 2 ? '' : 'de') + 'active'](UI.CHAT.BUTTONS.SCROLL);
+    UI[(-display.scrollTop > display.clientHeight / 2 ? '' : 'de') + 'active'](UI.CHAT.BUTTONS.SCROLL);
 
     //UI.CHAT.BUTTONS.SCROLL.classList[-disp.scrollTop > disp.clientHeight / 2 ? 'add' : 'remove']('active');
 
@@ -122,6 +120,10 @@ UI.CHAT.NODE.addEventListener('close', message.clear );
 
 window.addEventListener('unload', chatSocket.close );
 
+window.addEventListener('blur', () => UI.CHAT.SOUND.volume = 1 );
+
+window.addEventListener('focus', () => UI.CHAT.SOUND.volume = 0 );
+
 tokenedRequest(URLS.CHAT.ME).then( response => { 
     if(response.name) {
         POPUPS.CHAT.open();
@@ -133,10 +135,10 @@ tokenedRequest(URLS.CHAT.ME).then( response => {
     UI.AUTH.FORM.querySelector('[type="submit"]').click();            
 });
 
-window.addEventListener('blur', () => {
-    UI.CHAT.SOUND.volume = 1;   
-});
-
-window.addEventListener('focus', () => {
-    UI.CHAT.SOUND.volume = 0;
-});
+if(COOKS.TOKEN.get()) {
+    setInterval( () => {
+        if(!COOKS.TOKEN.get()) {
+            UI.CHAT.BUTTONS.EXIT.click();
+        }
+    }, AGE.MINUTE * 5 * 1000);
+}

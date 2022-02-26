@@ -1,8 +1,3 @@
-export const AGE = {
-    DAY: 3600 * 24,
-    HOUR: 3600,
-}
-
 export class Cookie {
     constructor(key, value, age) {
         this.key = key;
@@ -19,7 +14,7 @@ export class Cookie {
         }
     }
 
-    set(value = '', age = AGE.HOUR) {
+    set(value = '', age = 3600) {
         document.cookie = this.key + '=' + encodeURIComponent(value) + '; max-age=' + age;
     }
 

@@ -16,19 +16,22 @@ const CHAT = {
 const AUTHORIZATION = {
     NODE: document.querySelector('.service__frame.authorization'),
     EXIT: document.querySelector('.service__frame.authorization .exit'),
-    FORM: document.querySelector('.service__frame.authorization .service__content')
+    FORM: document.forms.authorizationMail
 }
 
 const CONFIRM = {
     NODE: document.querySelector('.service__frame.confirm'),
     EXIT: document.querySelector('.service__frame.confirm .exit'),
-    FORM: document.querySelector('.service__frame.confirm .service__content')
+    FORM: document.forms.confirmCode
 }
 
 const SETTINGS = {
     NODE: document.querySelector('.service__frame.settings'),
     EXIT: document.querySelector('.service__frame.settings .exit'),
-    FORM: document.querySelector('.service__frame.settings .service__content')
+    FORMS: {
+        NAME: document.forms.chatName,
+        MODE: document.forms.chatMode
+    } 
 }
 
 export const UI = {

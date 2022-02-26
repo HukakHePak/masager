@@ -36,11 +36,14 @@ export const message = { //rename to display
 
     print(data) {
         const height = display.scrollHeight;
+        
+        display.prepend(message.create(data));
 
-        const node = message.create(data);
-        display.prepend(node);
-
-        display.scrollTop = height - display.scrollHeight;
+        if(-display.scrollTop <= display.clientHeight) {
+            display.scrollTop = height - display.scrollHeight;
+            message.scrollDown();
+        }
+        
     },
 
     create(data) {
@@ -68,7 +71,6 @@ export const message = { //rename to display
     },
 
     scrollDown() {
-        console.log(display.scrollTop);
         display.scrollTop -= (display.scrollTop - 40) / 40;
 
         if(-display.scrollTop > 0) {

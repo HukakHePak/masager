@@ -1,3 +1,11 @@
+export const AGE = {
+    DAY: 3600 * 24,
+    HOUR: 3600,
+    MINUTE: 60,
+    SECOND: 1,
+    WEEK: 3600 * 24 * 7
+}
+
 export function formatDate(iso) {
     const date = iso ? new Date(iso) : new Date();
 
