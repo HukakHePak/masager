@@ -76,13 +76,13 @@ export const message = { //rename to display
         } 
     },
 
-    scrollToStart() {
-        display.scrollTop = -display.scrollHeight;
+    // scrollToStart() {
+    //     display.scrollTop = -display.scrollHeight;
 
-        if(!UI.isActive(UI.CHAT.STORY)) {
-            setTimeout(message.scrollToStart, 0);
-        } 
-    },
+    //     if(!UI.isActive(UI.CHAT.STORY)) {
+    //         setTimeout(message.scrollToStart, 0);
+    //     } 
+    // },
 
     showScroll() {
 
