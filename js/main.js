@@ -40,7 +40,7 @@ function formHandler(handling) {
 
 UI.CHAT.BUTTONS.SETTINGS.addEventListener('click', () => {
     tokenedRequest(URLS.CHAT.ME).then( response => {
-        UI.SETTINGS.FORMS.NAME.elements.newName.value = response.name;
+        UI.SETTINGS.FORM.elements.newName.value = response.name;
     });
 
     POPUPS.SETTINGS.open();
@@ -73,7 +73,7 @@ UI.CONFIRM.FORM.addEventListener('submit',formHandler( event => {
     tokenedRequest(URLS.CHAT.ME).then( () => { POPUPS.CHAT.open() });
 }));
 
-UI.SETTINGS.FORMS.NAME.addEventListener('submit', formHandler( event => { // remake submits to one handle
+UI.SETTINGS.FORM.addEventListener('submit', formHandler( event => { // remake submits to one handle
     tokenedRequest(URLS.CHAT.USER, 'patch', { 
         name: event.target.elements.newName.value 
     });
@@ -83,6 +83,7 @@ UI.SETTINGS.FORMS.NAME.addEventListener('submit', formHandler( event => { // rem
 
 UI.CHAT.FORM.addEventListener('submit', formHandler(event => {
     chatSocket.socket?.send(JSON.stringify({ text: event.target.newMessage.value }));
+    message.scrollDown();
 }));
 
 UI.CHAT.NODE.addEventListener('open', async () => {
@@ -107,22 +108,17 @@ UI.CHAT.DISPLAY.addEventListener('scroll', () => {
     }
 
     UI[(-display.scrollTop > display.clientHeight / 2 ? '' : 'de') + 'active'](UI.CHAT.BUTTONS.SCROLL);
-
-    //UI.CHAT.BUTTONS.SCROLL.classList[-disp.scrollTop > disp.clientHeight / 2 ? 'add' : 'remove']('active');
-
-    // if(-disp.scrollTop > disp.clientHeight) {
-    //     console.log('true');
-    // }
-
 });
 
 UI.CHAT.NODE.addEventListener('close', message.clear );
 
 window.addEventListener('unload', chatSocket.close );
 
-window.addEventListener('blur', () => UI.CHAT.SOUND.volume = 1 );
+if(localStorage.getItem('mode')) {
+    UI.darkin();
+}
 
-window.addEventListener('focus', () => UI.CHAT.SOUND.volume = 0 );
+console.log(UI.HTML.classList.contains('dark'))
 
 tokenedRequest(URLS.CHAT.ME).then( response => { 
     if(response.name) {
@@ -142,3 +138,10 @@ if(COOKS.TOKEN.get()) {
         }
     }, AGE.MINUTE * 5 * 1000);
 }
+
+
+UI.SETTINGS.BUTTONS.LIGHT.addEventListener('click', UI.lightin );
+UI.SETTINGS.BUTTONS.DARK.addEventListener('click', UI.darkin );
+
+window.addEventListener('blur', () => UI.CHAT.SOUND.volume = 1 );
+window.addEventListener('focus', () => UI.CHAT.SOUND.volume = 0 );

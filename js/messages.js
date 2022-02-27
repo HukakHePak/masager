@@ -3,9 +3,7 @@ import { formatDate } from './time.js';
 
 const display = UI.CHAT.DISPLAY;
 
-export const message = { //rename to display
-
-    //try to add methods for UI.CHAT.DISPLAY
+export const message = { 
     printChunk(size) {
         const messages = JSON.parse(localStorage.getItem('messages'));  
         
@@ -50,14 +48,24 @@ export const message = { //rename to display
         try {   
             const node = UI.CHAT.TEMPLATE.content.cloneNode(true);
 
+            const sender = node.querySelector('.sender');
+
             if(localStorage.getItem('mail') == data.user.email) {
                 data.user.name = 'Вы';
                 node.querySelector('.message__deck').classList.add('me');
+            } else  {
+                sender.addEventListener('click', () => {
+                    UI.CHAT.FORM.elements.newMessage.value = '@'+ data.user.name;
+                });
             }
     
+            
+
             node.querySelector('.content').textContent = data.text;
             node.querySelector('.time').textContent = formatDate(data.createdAt).time;
-            node.querySelector('.sender').textContent = data.user.name;       
+            node.querySelector('.sender').textContent = data.user.name; 
+            
+            
 
             return node;
         } catch (e) {
@@ -77,16 +85,4 @@ export const message = { //rename to display
             setTimeout(message.scrollDown, 0);
         } 
     },
-
-    // scrollToStart() {
-    //     display.scrollTop = -display.scrollHeight;
-
-    //     if(!UI.isActive(UI.CHAT.STORY)) {
-    //         setTimeout(message.scrollToStart, 0);
-    //     } 
-    // },
-
-    showScroll() {
-
-    }
 };

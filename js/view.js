@@ -28,14 +28,19 @@ const CONFIRM = {
 const SETTINGS = {
     NODE: document.querySelector('.service__frame.settings'),
     EXIT: document.querySelector('.service__frame.settings .exit'),
-    FORMS: {
-        NAME: document.forms.chatName,
-        MODE: document.forms.chatMode
-    } 
+    FORM: document.forms.chatName,
+    BUTTONS: {
+        LIGHT: document.querySelector('.service__frame .light__mode'),
+        DARK: document.querySelector('.service__frame .dark__mode'),
+    }
 }
 
+const HTML = document.querySelector('html');
+const VIDEO = document.querySelector('.dark-mode__video');
+
 export const UI = {
-    CHAT, AUTH: AUTHORIZATION, CONFIRM, SETTINGS,
+    CHAT, AUTH: AUTHORIZATION, CONFIRM, SETTINGS, HTML,
+
     active(node) {
         node?.classList.add('active');
     },
@@ -46,5 +51,17 @@ export const UI = {
 
     deactive(node) {
         node?.classList.remove('active');
+    },
+
+    darkin() {
+        HTML.classList.add('dark');
+        UI.active(VIDEO);
+        localStorage.setItem('mode', 'dark');
+    },
+
+    lightin() {
+        HTML.classList.remove('dark');
+        UI.deactive(VIDEO);
+        localStorage.setItem('mode', '');
     }
 }
