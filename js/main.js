@@ -87,7 +87,7 @@ UI.CHAT.FORM.addEventListener('submit', formHandler(event => {
 }));
 
 UI.CHAT.NODE.addEventListener('open', async () => {
-    const messages = (await tokenedRequest(URLS.CHAT.MESSAGES))?.messages;
+    const { messages } = (await tokenedRequest(URLS.CHAT.MESSAGES));
 
     if(!messages) return;
 

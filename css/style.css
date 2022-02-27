@@ -245,6 +245,7 @@ button.message__scroll:hover {
     font-weight: 300;
     font-size: 12px;
     line-height: 19px;
+    margin-left: 16px;
     color: #333333;
 }
 
