@@ -394,7 +394,7 @@ button.dark__mode {
 
 .dark [type="text"] {
     border: 1.3px solid #7e02af;
-    color: #af0202;
+    color: #7e02af;
     background: transparent;
     
 }
@@ -434,12 +434,12 @@ button.dark__mode {
 
 .dark .message__display .story__end {
     color: rgb(2, 0, 27);
-    background: #ff007743;
+    background: #652a7aa1;
 }
 
 .dark button.message__scroll {
     color: rgb(2, 0, 27);
-    background: #ff007743;
+    background: #652a7aa1;
     border: 0;
     box-shadow: none;
 }
@@ -449,28 +449,28 @@ button.dark__mode {
 }
 
 .dark .message__deck {
-    background: rgba(20, 0, 53, 0.486);
+    background: rgba(20, 0, 53, 0.822);
     box-shadow: none;
 }
 
 .dark .message__deck.me {
-    background: rgba(33, 4, 80, 0.712);
+    background: rgba(33, 4, 80, 0.897);
 }
 
 .dark .message__deck.unread {
-    background: rgba(15, 4, 80, 0.712);
+    background: rgba(22, 6, 109, 0.89);
 }
 
 .dark .message__deck .sender {
-    color: rgb(107, 14, 14);
+    color: #642a7a;
 }
 
 .dark .message__deck .content {  
-    color: #af0202;
+    color: #7e02af;
 }
 
 .dark .message__deck .time { 
-    color: rgb(92, 0, 0);
+    color: #7e02af;
 }
 
 .dark .message__panel {
@@ -509,7 +509,7 @@ button.dark__mode {
     background: url(../img/dark-mode-dark-min.png) no-repeat;
     background-size: cover;
     color: transparent;
-    border-width: 2px; 
+    border-width: 3px; 
 }
 
 

@@ -114,6 +114,19 @@ UI.CHAT.NODE.addEventListener('close', message.clear );
 
 window.addEventListener('unload', chatSocket.close );
 
+UI.SETTINGS.BUTTONS.LIGHT.addEventListener('click', () => {
+    UI.HTML.classList.remove('dark');
+    UI.deactive(UI.VIDEO);
+    localStorage.setItem('mode', '');
+});
+
+UI.SETTINGS.BUTTONS.DARK.addEventListener('click', () => {
+    UI.HTML.classList.add('dark');
+    UI.active(UI.VIDEO);
+
+    localStorage.setItem('mode', 'dark');
+});
+
 if(localStorage.getItem('mode')) UI.SETTINGS.BUTTONS.DARK.click();
 
 tokenedRequest(URLS.CHAT.ME).then( response => { 
@@ -134,20 +147,6 @@ if(COOKS.TOKEN.get()) {
         }
     }, AGE.MINUTE * 5 * 1000);
 }
-
-
-UI.SETTINGS.BUTTONS.LIGHT.addEventListener('click', () => {
-    UI.HTML.classList.remove('dark');
-    UI.deactive(UI.VIDEO);
-    localStorage.setItem('mode', '');
-});
-
-UI.SETTINGS.BUTTONS.DARK.addEventListener('click', () => {
-    UI.HTML.classList.add('dark');
-    UI.active(UI.VIDEO);
-
-    localStorage.setItem('mode', 'dark');
-});
 
 window.addEventListener('blur', () => UI.CHAT.SOUND.volume = 1 );
 window.addEventListener('focus', () => UI.CHAT.SOUND.volume = 0 );
