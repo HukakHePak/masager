@@ -39,7 +39,7 @@ const HTML = document.querySelector('html');
 const VIDEO = document.querySelector('.dark-mode__video');
 
 export const UI = {
-    CHAT, AUTH: AUTHORIZATION, CONFIRM, SETTINGS, HTML,
+    CHAT, AUTH: AUTHORIZATION, CONFIRM, SETTINGS, HTML, VIDEO,
 
     active(node) {
         node?.classList.add('active');
@@ -52,16 +52,4 @@ export const UI = {
     deactive(node) {
         node?.classList.remove('active');
     },
-
-    darkin() {
-        HTML.classList.add('dark');
-        UI.active(VIDEO);
-        localStorage.setItem('mode', 'dark');
-    },
-
-    lightin() {
-        HTML.classList.remove('dark');
-        UI.deactive(VIDEO);
-        localStorage.setItem('mode', '');
-    }
 }

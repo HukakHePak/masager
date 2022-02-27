@@ -494,7 +494,7 @@ button.dark__mode {
     box-shadow: none;
 }
 
-.dark .service__content .service__inputs button {
+.dark .service__content .service__inputs input {
     color: #642a7a;
 }
 

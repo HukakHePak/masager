@@ -20,9 +20,11 @@ export class SocketHandler {
     }
 
     close(options) {
-        this.socket?.close(options?.code, options?.reason);
-        this.socket.onmessage = undefined;
-        this.socket.onerror = undefined;
+        if(!this._socket) return;
+
+        this.socket.close(options?.code, options?.reason);
+        this.socket.onmessage = () => {};
+        this.socket.onerror = () => {};
         this._socket = undefined;
     }
 }

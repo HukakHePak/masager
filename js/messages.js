@@ -57,17 +57,14 @@ export const message = {
                 sender.addEventListener('click', () => {
                     UI.CHAT.FORM.elements.newMessage.value = '@'+ data.user.name;
                 });
-            }
-    
-            
+            }            
 
             node.querySelector('.content').textContent = data.text;
             node.querySelector('.time').textContent = formatDate(data.createdAt).time;
             node.querySelector('.sender').textContent = data.user.name; 
             
-            
-
             return node;
+
         } catch (e) {
             e.message = 'uncorrect data'
             console.error(e);
