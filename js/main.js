@@ -117,6 +117,7 @@ window.addEventListener('unload', chatSocket.close );
 UI.SETTINGS.BUTTONS.LIGHT.addEventListener('click', () => {
     UI.HTML.classList.remove('dark');
     UI.deactive(UI.VIDEO);
+    
     localStorage.setItem('mode', '');
 });
 
