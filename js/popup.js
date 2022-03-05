@@ -2,7 +2,10 @@ export class Popup {
     static _nodes = [];
 
     constructor(node) {
+        if(!node) throw new Error('dom element is undefined at new Popup');
+
         this._node = node;
+        this._class = 'active';
         Popup._nodes.push(this);
     }
 
@@ -15,17 +18,17 @@ export class Popup {
 
         Popup._nodes.forEach(item => item.close());
 
-        this.node?.classList.add('active');
-        this.node?.dispatchEvent(new CustomEvent('open'));   
+        this.node.classList.add(this._class);
+        this.node.dispatchEvent(new CustomEvent('open'));   
     }
     close() {
         if(!this.isOpened()) return;
 
-        this.node?.classList.remove('active');
-        this.node?.dispatchEvent(new CustomEvent('close'));
+        this.node.classList.remove(this._class);
+        this.node.dispatchEvent(new CustomEvent('close'));
     }
     
     isOpened() {
-        return this.node?.classList.contains('active');
+        return this.node.classList.contains(this._class);
     }
 }

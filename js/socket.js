@@ -19,8 +19,14 @@ export class SocketHandler {
         this._socket = socket;
     }
 
+    send(data) {
+        if(!this.socket) return;
+
+        this.socket.send(JSON.stringify(data));
+    }
+
     close(options) {
-        if(!this._socket) return;
+        if(!this.socket) return;
 
         this.socket.close(options?.code, options?.reason);
         this.socket.onmessage = () => {};

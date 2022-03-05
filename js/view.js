@@ -40,16 +40,4 @@ const VIDEO = document.querySelector('.dark-mode__video');
 
 export const UI = {
     CHAT, AUTH: AUTHORIZATION, CONFIRM, SETTINGS, HTML, VIDEO,
-
-    active(node) {
-        node?.classList.add('active');
-    },
-    
-    isActive(node) {
-        return node?.classList.contains('active');
-    },
-
-    deactive(node) {
-        node?.classList.remove('active');
-    },
 }

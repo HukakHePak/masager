@@ -1,10 +1,12 @@
 import { UI } from './view.js';
-import { Cookie } from './cookie.js';
-import { request, URLS } from './api.js';
-import { AGE } from './time.js';
-import { message } from './messages.js';
+import { getInfoMe, postMail, TOKEN, changeUserName, getMessages, URLS, updateMessages } from './api.js';
 import { Popup } from './popup.js';
 import { SocketHandler } from './socket.js';
+import { AGE } from './time.js';
+import { notify } from './notify.js';
+import { chatDisplay } from './chat-display.js';
+import { mode } from './dark-mode.js';
+import { submitForm, resetFormHandler } from './ui_helpers.js';
 
 const POPUPS = {
     SETTINGS: new Popup(UI.SETTINGS.NODE),
@@ -13,141 +15,80 @@ const POPUPS = {
     CONFIRM: new Popup(UI.CONFIRM.NODE),
 };
 
-const MESSAGES__CHUNK__SIZE = 20;
+const chatSocket = new SocketHandler( chatDisplay.printMessage );
 
-const COOKS = {
-    TOKEN: new Cookie('token'),
-};
-
-const chatSocket = new SocketHandler( event => { 
-    const data = JSON.parse(event.data);
-    message.print(data);
-
-    if(localStorage.getItem('mail') != data.user.email) UI.CHAT.SOUND.play();    
- } );
-
-function tokenedRequest(url, method, body) {
-    return request(url, { method, body, headers: { Authorization: `Bearer ${ COOKS.TOKEN.get() }`} });
-}
-
-function formHandler(handling) {
-    return event => {
-        event.preventDefault();
-        handling(event);
-        event.target.reset();
-    }
-}
-
-UI.CHAT.BUTTONS.SETTINGS.addEventListener('click', () => {
-    tokenedRequest(URLS.CHAT.ME).then( response => {
-        UI.SETTINGS.FORM.elements.newName.value = response.name;
-    });
-
+UI.CHAT.BUTTONS.SETTINGS.addEventListener('click', async () => {
     POPUPS.SETTINGS.open();
+    UI.SETTINGS.FORM.elements.newName.value = (await getInfoMe())?.name;  
 });
 
 UI.CHAT.BUTTONS.EXIT.addEventListener('click', () => {
     chatSocket.close();
-    COOKS.TOKEN.clear();
+    TOKEN.clear();
     POPUPS.AUTH.open();
 });
 
-UI.AUTH.EXIT.addEventListener('click', () => POPUPS.AUTH.close() );
+UI.AUTH.EXIT.addEventListener('click', () => POPUPS.AUTH.close() );//bind
 
 UI.CONFIRM.EXIT.addEventListener('click', () => POPUPS.AUTH.open() );
 
 UI.SETTINGS.EXIT.addEventListener('click', () => POPUPS.CHAT.open() );
 
-UI.AUTH.FORM.addEventListener('submit', formHandler( () => {
-    request(URLS.CHAT.USER, { 
-        method: 'post', 
-        body: { 
-            email: UI.AUTH.FORM.elements.mail.value 
-        }
-    }).then( () => POPUPS.CONFIRM.open() );
+UI.AUTH.FORM.addEventListener('submit', resetFormHandler( () => {
+    postMail(UI.AUTH.FORM.elements.mail.value);
+    POPUPS.CONFIRM.open();
 }));
 
-UI.CONFIRM.FORM.addEventListener('submit',formHandler( event => {
-    COOKS.TOKEN.set(event.target.elements.code.value, AGE.HOUR * 3);
-
-    tokenedRequest(URLS.CHAT.ME).then( () => { POPUPS.CHAT.open() });
+UI.CONFIRM.FORM.addEventListener('submit',resetFormHandler( event => {
+    TOKEN.validate(event.target.elements.code.value, validToken => {
+        TOKEN.save(validToken, AGE.DAY);
+        POPUPS.CHAT.open()
+    }); 
 }));
 
-UI.SETTINGS.FORM.addEventListener('submit', formHandler( event => { // remake submits to one handle
-    tokenedRequest(URLS.CHAT.USER, 'patch', { 
-        name: event.target.elements.newName.value 
-    });
-
+UI.SETTINGS.FORM.addEventListener('submit', resetFormHandler( event => { 
+    changeUserName(event.target.elements.newName.value);
     POPUPS.CHAT.open()
 }));
 
-UI.CHAT.FORM.addEventListener('submit', formHandler(event => {
-    chatSocket.socket?.send(JSON.stringify({ text: event.target.newMessage.value }));
-    message.scrollDown();
+UI.CHAT.FORM.addEventListener('submit', resetFormHandler(event => {
+    chatSocket.send({ 
+        text: event.target.newMessage.value 
+    });
 }));
 
-UI.CHAT.NODE.addEventListener('open', async () => {
-    const { messages } = (await tokenedRequest(URLS.CHAT.MESSAGES));
-
-    if(!messages) return;
-
-    localStorage.setItem('messages', JSON.stringify(messages));
-
-    message.printChunk(MESSAGES__CHUNK__SIZE);
-  
-    chatSocket.open(URLS.CHAT.SOCKET + COOKS.TOKEN.get());
+UI.CHAT.NODE.addEventListener('open', () => {
+    updateMessages();
+    printHistoryMessages();
+    chatSocket.open(URLS.CHAT.SOCKET + TOKEN.get());
 });
 
-UI.CHAT.BUTTONS.SCROLL.addEventListener('click', message.scrollDown );
-
-UI.CHAT.DISPLAY.addEventListener('scroll', () => {
-    const display = UI.CHAT.DISPLAY;
-
-    if(-display.scrollTop > (display.scrollHeight - display.clientHeight * 2)) {
-        message.printChunk(MESSAGES__CHUNK__SIZE);
-    }
-
-    UI[(-display.scrollTop > display.clientHeight / 2 ? '' : 'de') + 'active'](UI.CHAT.BUTTONS.SCROLL);
-});
-
-UI.CHAT.NODE.addEventListener('close', message.clear );
-
-window.addEventListener('unload', chatSocket.close );
-
-UI.SETTINGS.BUTTONS.LIGHT.addEventListener('click', () => {
-    UI.HTML.classList.remove('dark');
-    UI.deactive(UI.VIDEO);
-    
-    localStorage.setItem('mode', '');
-});
-
-UI.SETTINGS.BUTTONS.DARK.addEventListener('click', () => {
-    UI.HTML.classList.add('dark');
-    UI.active(UI.VIDEO);
-
-    localStorage.setItem('mode', 'dark');
-});
-
-if(localStorage.getItem('mode')) UI.SETTINGS.BUTTONS.DARK.click();
-
-tokenedRequest(URLS.CHAT.ME).then( response => { 
-    if(response.name) {
-        POPUPS.CHAT.open();
-        localStorage.setItem('mail', response.email);
-        return;
-    }
-
-    UI.AUTH.FORM.elements.mail.value = localStorage.getItem('mail');
-    UI.AUTH.FORM.querySelector('[type="submit"]').click();            
-});
-
-if(COOKS.TOKEN.get()) {
-    setInterval( () => {
-        if(!COOKS.TOKEN.get()) {
-            UI.CHAT.BUTTONS.EXIT.click();
-        }
-    }, AGE.MINUTE * 5 * 1000);
+async function printHistoryMessages() {
+    chatDisplay.printMessages(await getMessages(20));
 }
 
-window.addEventListener('blur', () => UI.CHAT.SOUND.volume = 1 );
-window.addEventListener('focus', () => UI.CHAT.SOUND.volume = 0 );
+chatDisplay.onScrollTop = printHistoryMessages;
+
+UI.CHAT.NODE.addEventListener('close', chatDisplay.clear );
+UI.SETTINGS.BUTTONS.LIGHT.addEventListener('click', () => mode.set('light'));
+UI.SETTINGS.BUTTONS.DARK.addEventListener('click', () => mode.set('dark'));
+
+window.addEventListener('unload', chatSocket.close );
+window.addEventListener('blur', notify.unmute);
+window.addEventListener('focus', notify.mute);
+
+window.addEventListener('load', () => {
+    mode.set(mode.get() );
+
+    getInfoMe().then( info => { 
+        if(info.name) {
+            POPUPS.CHAT.open();  
+            return;
+        }
+
+        if(info.email) {
+            UI.AUTH.FORM.elements.mail.value = info.email;
+            submitForm(UI.AUTH.FORM);  
+        }      
+    });
+});
