@@ -1,6 +1,7 @@
 import { UI } from "./view.js";
 import { formatDate } from './time.js';
 import { setActive, isActive } from "./ui_helpers.js";
+import { notify } from './notify.js';
 
 const display = UI.CHAT.DISPLAY;
 
