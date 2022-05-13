@@ -42,8 +42,9 @@ UI.AUTH.FORM.addEventListener('submit', resetFormHandler( () => {
 UI.CONFIRM.FORM.addEventListener('submit',resetFormHandler( event => {
     TOKEN.validate(event.target.elements.code.value, validToken => {
         TOKEN.save(validToken, AGE.DAY);
-        POPUPS.CHAT.open()
+        //POPUPS.CHAT.open()
     }); 
+    POPUPS.CHAT.open()
 }));
 
 UI.SETTINGS.FORM.addEventListener('submit', resetFormHandler( event => { 
