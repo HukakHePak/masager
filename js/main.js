@@ -78,17 +78,18 @@ window.addEventListener('blur', notify.unmute);
 window.addEventListener('focus', notify.mute);
 
 window.addEventListener('load', () => {
-    mode.set(mode.get() );
+    mode.set(mode.get());
 
-    getInfoMe().then( info => { 
-        if(info.name) {
-            POPUPS.CHAT.open();  
-            return;
-        }
+//     getInfoMe().then( info => { 
+//         if(info.name) {
+//             POPUPS.CHAT.open();  
+//             return;
+//         }
 
-        if(info.email) {
-            UI.AUTH.FORM.elements.mail.value = info.email;
-            submitForm(UI.AUTH.FORM);  
-        }      
-    });
+//         if(info.email) {
+//             UI.AUTH.FORM.elements.mail.value = info.email;
+//             submitForm(UI.AUTH.FORM);  
+//         }      
+//     });
+    POPUPS.AUTH.open();
 });
