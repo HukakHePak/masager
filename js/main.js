@@ -42,9 +42,7 @@ UI.AUTH.FORM.addEventListener('submit', resetFormHandler( () => {
 UI.CONFIRM.FORM.addEventListener('submit',resetFormHandler( event => {
     TOKEN.validate(event.target.elements.code.value, validToken => {
         TOKEN.save(validToken, AGE.DAY);
-        //POPUPS.CHAT.open()
-    }); 
-    POPUPS.CHAT.open()
+    }).finally(POPUPS.CHAT.open);
 }));
 
 UI.SETTINGS.FORM.addEventListener('submit', resetFormHandler( event => { 
@@ -81,16 +79,16 @@ window.addEventListener('focus', notify.mute);
 window.addEventListener('load', () => {
     mode.set(mode.get());
 
-//     getInfoMe().then( info => { 
-//         if(info.name) {
-//             POPUPS.CHAT.open();  
-//             return;
-//         }
+    getInfoMe().then( info => { 
+        if(info.name) {
+            POPUPS.CHAT.open();  
+            return;
+        }
 
-//         if(info.email) {
-//             UI.AUTH.FORM.elements.mail.value = info.email;
-//             submitForm(UI.AUTH.FORM);  
-//         }      
-//     });
+        if(info.email) {
+            UI.AUTH.FORM.elements.mail.value = info.email;
+            submitForm(UI.AUTH.FORM);  
+        }      
+    });
     POPUPS.AUTH.open();
 });

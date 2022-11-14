@@ -2,7 +2,7 @@ import { Storage } from './storage.js';
 import { Cookie } from './cookie.js';
 
 const DOMAINS = {
-    CHAT: 'https://chat1-341409.oa.r.appspot.com/api/',
+    CHAT: 'http://127.0.0.1:5000/masager/api/',
 };
 
 export const URLS = {
@@ -10,11 +10,11 @@ export const URLS = {
         USER: DOMAINS.CHAT + 'user',
         ME: DOMAINS.CHAT + 'user/me',
         MESSAGES: DOMAINS.CHAT + 'messages',
-        SOCKET: 'wss://chat1-341409.oa.r.appspot.com/websockets?'
+        SOCKET: 'ws://localhost:5000/masager/websocket?'
     },
 };
 
-const storages = {
+export const storages = {
     token: new Cookie('token'),
     email: new Storage('email'),
     messages: new Storage('messages'),
@@ -84,7 +84,7 @@ export function changeUserName(name) {
 }
 
 export async function getInfoMe() {
-    const info = await tokenedRequest(URLS.CHAT.ME);
+    const info = await tokenedRequest(URLS.CHAT.ME) || {};
     
     if(!info?.email) info.email = storages.email.get();
 

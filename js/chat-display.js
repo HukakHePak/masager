@@ -2,6 +2,7 @@ import { UI } from "./view.js";
 import { formatDate } from './time.js';
 import { setActive, isActive } from "./ui_helpers.js";
 import { notify } from './notify.js';
+import { storages } from "./api.js";
 
 const display = UI.CHAT.DISPLAY;
 
@@ -27,7 +28,7 @@ export const chatDisplay = {
     printMessage(event) {
         const data = typeof event.data == 'string' ? JSON.parse(event.data) : event.data;
     
-        if(localStorage.getItem('mail') != data.user.email) notify.sound(); 
+        if(storages.email.get() != data.user.email) notify.sound(); 
 
         const height = display.scrollHeight;
         
@@ -46,7 +47,7 @@ export const chatDisplay = {
 
             const sender = node.querySelector('.sender');
 
-            if(localStorage.getItem('mail') == data.user.email) {
+            if(storages.email.get() == data.user.email) {
                 data.user.name = 'Вы';
                 node.querySelector('.message__deck').classList.add('me');
             } else  {
