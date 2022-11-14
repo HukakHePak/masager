@@ -2,7 +2,7 @@ import { Storage } from './storage.js';
 import { Cookie } from './cookie.js';
 
 const DOMAINS = {
-    CHAT: 'http://127.0.0.1:5000/masager/api/',
+    CHAT: 'http://note-lawn.ru/masager/api/',
 };
 
 export const URLS = {
@@ -10,7 +10,7 @@ export const URLS = {
         USER: DOMAINS.CHAT + 'user',
         ME: DOMAINS.CHAT + 'user/me',
         MESSAGES: DOMAINS.CHAT + 'messages',
-        SOCKET: 'ws://localhost:5000/masager/websocket?'
+        SOCKET: 'ws://note-lawn.ru/masager/websocket?'
     },
 };
 
