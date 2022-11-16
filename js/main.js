@@ -39,10 +39,10 @@ UI.AUTH.FORM.addEventListener('submit', resetFormHandler( () => {
     POPUPS.CONFIRM.open();
 }));
 
-UI.CONFIRM.FORM.addEventListener('submit',resetFormHandler( event => {
-    TOKEN.validate(event.target.elements.code.value, validToken => {
-        TOKEN.save(validToken, AGE.DAY);
-    }).finally(() => POPUPS.CHAT.open());
+UI.CONFIRM.FORM.addEventListener('submit',resetFormHandler( async event => {
+    await TOKEN.validate(event.target.elements.code.value, validToken =>  TOKEN.save(validToken, AGE.DAY), console.error);
+    
+    POPUPS.CHAT.open();
 }));
 
 UI.SETTINGS.FORM.addEventListener('submit', resetFormHandler( event => { 

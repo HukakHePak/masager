@@ -32,7 +32,7 @@ export const TOKEN = {
     },
     
     async isValid(token) {
-        return !!(await tokenedRequest(URLS.CHAT.ME, 'get', undefined, token))?.name;
+        return !!(await tokenedRequest(URLS.CHAT.ME, 'get', undefined, token))?.email;
     },
 
     clear() {
