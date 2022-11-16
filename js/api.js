@@ -2,7 +2,8 @@ import { Storage } from './storage.js';
 import { Cookie } from './cookie.js';
 
 const DOMAINS = {
-    CHAT: 'https://note-lawn.ru/masager/api/',
+    CHAT: 'https://note-lawn.ru/api/masager/',
+    // CHAT: '/api/masager/',
 };
 
 export const URLS = {
@@ -10,7 +11,8 @@ export const URLS = {
         USER: DOMAINS.CHAT + 'user',
         ME: DOMAINS.CHAT + 'user/me',
         MESSAGES: DOMAINS.CHAT + 'messages',
-        SOCKET: 'wss://note-lawn.ru/masager/websocket?'
+        SOCKET: 'wss://note-lawn.ru/websocket/masager?'
+        // SOCKET: 'ws://localhost:5000/websocket/masager?'
     },
 };
 
@@ -84,11 +86,15 @@ export function changeUserName(name) {
 }
 
 export async function getInfoMe() {
+    try {
     const info = await tokenedRequest(URLS.CHAT.ME) || {};
     
     if(!info?.email) info.email = storages.email.get();
 
     return info;
+    } catch (err) {
+        console.error(err);
+    }
 }
 
 export async function updateMessages() {

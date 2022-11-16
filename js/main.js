@@ -28,7 +28,7 @@ UI.CHAT.BUTTONS.EXIT.addEventListener('click', () => {
     POPUPS.AUTH.open();
 });
 
-UI.AUTH.EXIT.addEventListener('click', () => POPUPS.AUTH.close() );//bind
+UI.AUTH.EXIT.addEventListener('click', () => POPUPS.AUTH.close() ); // requres bind
 
 UI.CONFIRM.EXIT.addEventListener('click', () => POPUPS.AUTH.open() );
 
@@ -42,7 +42,7 @@ UI.AUTH.FORM.addEventListener('submit', resetFormHandler( () => {
 UI.CONFIRM.FORM.addEventListener('submit',resetFormHandler( event => {
     TOKEN.validate(event.target.elements.code.value, validToken => {
         TOKEN.save(validToken, AGE.DAY);
-    }).finally(POPUPS.CHAT.open);
+    }).finally(() => POPUPS.CHAT.open());
 }));
 
 UI.SETTINGS.FORM.addEventListener('submit', resetFormHandler( event => { 
